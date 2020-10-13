@@ -54,16 +54,37 @@ node* stree::add_nodes(node* cur, int st, int ed){
     newnode -> mid = mid;
 
     if(st == ed){
-        //
+        newnode -> daddy = cur;
+        newnode -> lchild = NULL;
+        newnode -> rchild = NULL;
+
+        newnode -> nn = 0;
+        newnode -> yn = -1;
+        newnode -> ny = -1;
+        newnode -> yy = in[st];
         return newnode;
     }
     else if(st + 1 == ed){
-        //
+        newnode -> daddy = cur;
+        newnode -> lchild = add_nodes(newnode, st, st);
+        newnode -> rchild = add_nodes(newnode, ed, ed);
+
+        newnode -> nn = 0;
+        newnode -> yn = in[st];
+        newnode -> ny = in[ed];
+        newnode -> yy = -1;
         return newnode;
     }
 
     newnode -> daddy = cur;
-    //newnode -> lchild = add_nodes(newnode, )
+    newnode -> lchild = add_nodes(newnode, st, mid);
+    newnode -> rchild = add_nodes(newnode, mid + 1, ed);
+
+    //newnode -> nn = 0;
+    //newnode -> yn = in[st];
+    //newnode -> ny = in[ed];
+    //newnode -> yy = -1;
+    return newnode;
 }
 
 int main(){
