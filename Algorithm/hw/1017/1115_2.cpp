@@ -381,7 +381,8 @@ int main(){
     stree tree;
     tree.btree();
     //printf("built!---------------\n");
-
+    //printf("%lld %lld %lld %lld\n", tree.head->yy, tree.head->yn, tree.head->ny, tree.head->yy);
+    //return 0;
     while(m--){
         int task;
         scanf("%d", &task);
