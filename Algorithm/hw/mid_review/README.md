@@ -11,7 +11,7 @@
 ## [1111. Inverted Triplets](https://oj.nctu.edu.tw/problems/1111/)
 ### 逆序數對 | merge sort
 - 底部出罷個哭啊XD
-- # long long 啦幹
+- ### long long 啦幹
 
 
 ## [1112. Lambert W Function](https://oj.nctu.edu.tw/problems/1112/)
