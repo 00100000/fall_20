@@ -2,8 +2,9 @@
 using namespace std;
 int in[500005];
 
-typedef struct node_{
-    int st;
+class node{
+public:
+int st;
     int ed;
     int mid;
 
@@ -15,10 +16,10 @@ typedef struct node_{
     int ny;
     int yn;
     int yy;
-}node;
+};
 
 class stree{
-    public:
+public:
     node* head;
     int n;
 
@@ -126,22 +127,92 @@ int stree::query(int st, int ed){
 }
 
 node* stree::look(node* cur, int st, int ed){
-    if(st == cur -> st && ed == cur -> ed) return cur;
+    if(st == cur -> st && ed == cur -> ed){
+        node* a = new node;
+        a -> nn = cur -> nn;
+        a -> ny = cur -> ny;
+        a -> yn = cur -> yn;
+        a -> yy = cur -> yy;
+        return a;
+    }
     if(ed <= cur -> mid) return look(cur -> lchild, st, ed);
     if(st > cur -> mid) return look(cur -> rchild, st, ed);
+
     node* ln = look(cur -> lchild, st, cur -> mid);
     node* rn = look(cur ->rchild, cur -> mid + 1, ed);
-    return qmerge(ln, rn);
+    node* a = qmerge(ln, rn);
+    delete ln;
+    delete rn;
+
+    return a;
 }
 
 void stree::merge(node* me){
-    //
+    node* ln = me -> lchild;
+    node* rn = me -> rchild;
+
+    node* a = qmerge(ln, rn);
+    me -> nn = a -> nn;
+    me -> ny = a -> ny;
+    me -> yn = a -> yn;
+    me -> yy = a -> yy;
+    delete a;
 }
 
 node* stree::qmerge(node* ln, node* rn){
     node* a = new node;
-    //
-    delete ln;
-    delete rn;
+
+    //nn
+    int tmp = 0;
+    //nn nn
+    if(ln -> nn >= 0 && rn -> nn >= 0)
+        tmp = tmp > (ln -> nn + rn -> nn) ? tmp : ln -> nn + rn -> nn;
+    //nn yn
+    if(ln -> nn >= 0 && rn -> yn >= 0)
+        tmp = tmp > (ln -> nn + rn -> yn) ? tmp : ln -> nn + rn -> yn;
+    //ny nn
+    if(ln -> ny >= 0 && rn -> nn >= 0)
+        tmp = tmp > (ln -> ny + rn -> nn) ? tmp : ln -> ny + rn -> nn;
+    a -> nn = tmp;
+
+    //ny
+    tmp = 0;
+    //nn ny
+    if(ln -> nn >= 0 && rn -> ny >= 0)
+        tmp = tmp > (ln -> nn + rn -> ny) ? tmp : ln -> nn + rn -> ny;
+    //ny ny
+    if(ln -> ny >= 0 && rn -> ny >= 0)
+        tmp = tmp > (ln -> ny + rn -> ny) ? tmp : ln -> ny + rn -> ny;
+    //nn yy
+    if(ln -> nn >= 0 && rn -> yy >= 0)
+        tmp = tmp > (ln -> nn + rn -> yy) ? tmp : ln -> nn + rn -> yy;
+    a -> ny = tmp;
+
+    //yn
+    tmp = 0;
+    //yn nn
+    if(ln -> yn >= 0 && rn -> nn >= 0)
+        tmp = tmp > (ln -> yn + rn -> nn) ? tmp : ln -> yn + rn -> nn;
+    //yn yn
+    if(ln -> yn >= 0 && rn -> yn >= 0)
+        tmp = tmp > (ln -> yn + rn -> yn) ? tmp : ln -> yn + rn -> yn;
+    //yy nn
+    if(ln -> yy >= 0 && rn -> nn >= 0)
+        tmp = tmp > (ln -> yy + rn -> nn) ? tmp : ln -> yy + rn -> nn;
+    a -> yn = tmp;
+
+    //yy
+    tmp = 0;
+    //yn ny
+    if(ln -> yn >= 0 && rn -> ny >= 0)
+        tmp = tmp > (ln -> yn + rn -> ny) ? tmp : ln -> yn + rn -> ny;
+    //yy ny
+    if(ln -> yy >= 0 && rn -> ny >= 0)
+        tmp = tmp > (ln -> yy + rn -> ny) ? tmp : ln -> yy + rn -> ny;
+    //yn yy
+    if(ln -> yn >= 0 && rn -> yy >= 0)
+        tmp = tmp > (ln -> yn + rn -> yy) ? tmp : ln -> yn + rn -> yy;
+    a -> yy = tmp;
+
     return a;
 }
