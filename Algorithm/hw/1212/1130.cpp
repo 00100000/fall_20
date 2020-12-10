@@ -47,12 +47,12 @@ int main(){
                 stx = j;
             }
 
-            if(in == 0) target[i][j] = 0;
-            else if(in == 3) target[i][j] = 3;
+            if(in == 0) target[i][j] = 0; // wall
+            else if(in == 3) target[i][j] = 3; // target
             else target[i][j] = 1;
 
             if(in >= 4){
-                go[1][i][j] = 1;
+                //go[1][i][j] = 1;
                 enemy[en][0] = i;
                 enemy[en][1] = j;
                 enemy[en][2] = in;
@@ -67,8 +67,10 @@ int main(){
     }
     */
     
-    for(int i = 2; i <= t + 1; i++){
+    for(int i = 0; i <= t; i++){
         for(int j = 0; j < en; j++){
+            go[i][ enemy[j][0] ][ enemy[j][1] ] = 1;
+
             int moved = 0;
             //for(int k = 0; k < 4; k++){
                 if(!moved && enemy[j][2] == 4){ //up
@@ -111,7 +113,7 @@ int main(){
                     }
                 }
             //}
-            go[i][ enemy[j][0] ][ enemy[j][1] ] = 1;
+            
         }
         /*
         printf("time: %d\n", i);
@@ -124,7 +126,8 @@ int main(){
     }
 
     queue<int> q;
-    q.push(make(sty, stx, 1));
+    q.push(make(sty, stx, 0));
+    go[0][sty][stx] = 5;
     int done = 0;
     while(!q.empty()){
         int y, x, now;
@@ -137,7 +140,7 @@ int main(){
         //up
         
         if(y-1 < 0 || go[now+1][y-1][x] || target[y-1][x] == 0){}
-        else if(go[now][y-1][x] == 1 && go[now+1][y][x] == 1){}
+        else if(go[now][y-1][x] == 1){}
         else if(target[y-1][x] == 3){
             printf("%d\n", now + 1);
             done = 1;
@@ -152,7 +155,7 @@ int main(){
         //right
         
         if(x+1 >= m || go[now+1][y][x+1] || target[y][x+1] == 0){}
-        else if(go[now][y][x+1] == 1 && go[now+1][y][x] == 1){}
+        else if(go[now][y][x+1] == 1){}
         else if(target[y][x+1] == 3){
             printf("%d\n", now + 1);
             done = 1;
@@ -167,7 +170,7 @@ int main(){
         //down
         
         if(y+1 >= n || go[now+1][y+1][x] || target[y+1][x] == 0){}
-        else if(go[now][y+1][x] == 1 && go[now+1][y][x] == 1){}
+        else if(go[now][y+1][x] == 1){}
         else if(target[y+1][x] == 3){
             printf("%d\n", now + 1);
             done = 1;
@@ -182,7 +185,7 @@ int main(){
         //left
         
         if(x-1 < 0  || go[now+1][y][x-1] || target[y][x-1] == 0){}
-        else if(go[now][y][x-1] == 1 && go[now+1][y][x] == 1){}
+        else if(go[now][y][x-1] == 1){}
         else if(target[y][x-1] == 3){
             printf("%d\n", now + 1);
             done = 1;
@@ -195,7 +198,7 @@ int main(){
         }
 
         //no change
-        if(go[now+1][y][x]){}
+        if(go[now+1][y][x] || go[now][y][x] == 1){}
         else {
             q.push(make(y, x, now+1)); 
             go[now+1][y][x] = 5; 
