@@ -4,13 +4,13 @@
 #include <utility>
 using namespace std;
 
-int go[1005][102][102]; // 1 if there is enemy
-int target[105][105]; // wall and destination
-int enemy[10005][3];
+int go[1005][102][102]; // [time][y][x] : 1 if threre is an enemy
+int target[105][105]; // [y][x] : wall(0) and destination(3)
+int enemy[10005][3]; // [# of enemy][y, x, direction]
 
-int stx, sty;
+int sx, sy; // source
 
-int make(int y, int x, int t){
+int inq(int y, int x, int t){
     int ans = 0;
     ans |= y;
     ans <<= 8;
@@ -20,7 +20,7 @@ int make(int y, int x, int t){
     return ans;
 }
 
-void anal(unsigned int in, int &y, int &x, int &t){
+void deq(unsigned int in, int &y, int &x, int &t){
     y = 0;
     x = 0;
     t = 0;
@@ -33,26 +33,24 @@ void anal(unsigned int in, int &y, int &x, int &t){
 
 int main(){
     int n, m, t;
-    int en = 0;
+    int en = 0; // # of enemy
     scanf("%d%d%d", &n, &m, &t);
 
-    //printf("%d %d %d\n", n, m, t);
     for(int i = 0; i < n; i++){
         for(int j = 0; j < m; j++){
             int in;
             scanf("%d", &in);
 
-            if(in == 2){
-                sty = i;
-                stx = j;
+            if(in == 2){ //source
+                sy = i;
+                sx = j;
             }
 
             if(in == 0) target[i][j] = 0; // wall
-            else if(in == 3) target[i][j] = 3; // target
+            else if(in == 3) target[i][j] = 3; // destination
             else target[i][j] = 1;
 
             if(in >= 4){
-                //go[1][i][j] = 1;
                 enemy[en][0] = i;
                 enemy[en][1] = j;
                 enemy[en][2] = in;
@@ -67,14 +65,17 @@ int main(){
     }
     */
     
+    // move enemy
     for(int i = 0; i <= t; i++){
         for(int j = 0; j < en; j++){
+
+            //
             go[i][ enemy[j][0] ][ enemy[j][1] ] = 1;
 
-            int moved = 0;
-            //for(int k = 0; k < 4; k++){
+            // move or turn
+            int moved = 0; // no use XDD
                 if(!moved && enemy[j][2] == 4){ //up
-                    if(target[ enemy[j][0] - 1][ enemy[j][1] ] == 0 || enemy[j][0] - 1 < 0){ // wall
+                    if(target[ enemy[j][0] - 1][ enemy[j][1] ] == 0 || enemy[j][0] - 1 < 0){ // wall & boundary
                         enemy[j][2] = 5;
                     }
                     else{
@@ -84,7 +85,7 @@ int main(){
                 }
 
                 else if(!moved && enemy[j][2] == 5){ //right
-                    if(target[ enemy[j][0] ][ enemy[j][1] + 1] == 0 || enemy[j][1] + 1 >= m){ // wall
+                    if(target[ enemy[j][0] ][ enemy[j][1] + 1] == 0 || enemy[j][1] + 1 >= m){ // wall & boundary
                         enemy[j][2] = 6;
                     }
                     else{ 
@@ -94,7 +95,7 @@ int main(){
                 }
 
                 else if(!moved && enemy[j][2] == 6){ //down
-                    if(target[ enemy[j][0] + 1][ enemy[j][1] ] == 0 || enemy[j][0] + 1 >= n){ // wall
+                    if(target[ enemy[j][0] + 1][ enemy[j][1] ] == 0 || enemy[j][0] + 1 >= n){ // wall & boundary
                         enemy[j][2] = 7;
                     }
                     else {
@@ -104,16 +105,14 @@ int main(){
                 }
 
                 else if(!moved && enemy[j][2] == 7){ //left
-                    if(target[ enemy[j][0] ][ enemy[j][1] - 1] == 0 || enemy[j][1] - 1 < 0){ // wall
+                    if(target[ enemy[j][0] ][ enemy[j][1] - 1] == 0 || enemy[j][1] - 1 < 0){ // wall & boundary
                         enemy[j][2] = 4;
                     }
                     else {
                         enemy[j][1] --;
-                        //moved = 1;
+                        moved = 1;
                     }
-                }
-            //}
-            
+                }            
         }
         /*
         printf("time: %d\n", i);
@@ -126,28 +125,26 @@ int main(){
     }
 
     queue<int> q;
-    q.push(make(sty, stx, 0));
-    go[0][sty][stx] = 5;
+    q.push(inq(sy, sx, 0));
+    go[0][sy][sx] = 5; // pushed
     int done = 0;
     while(!q.empty()){
         int y, x, now;
-        anal(q.front(), y, x, now);
+        deq(q.front(), y, x, now);
         q.pop();
         if(now >= t) break;
 
-        //printf("cy: %d, cx: %d, ct: %d\n", y, x, now);
-
         //up
         
-        if(y-1 < 0 || go[now+1][y-1][x] || target[y-1][x] == 0){}
-        else if(go[now][y-1][x] == 1){}
-        else if(target[y-1][x] == 3){
+        if(y-1 < 0 || go[now+1][y-1][x] || target[y-1][x] == 0){} // boundary || pushed/enemy will be there || wall
+        else if(go[now][y-1][x] == 1){} // enemy is there
+        else if(target[y-1][x] == 3){ // destination
             printf("%d\n", now + 1);
             done = 1;
             break;
         }
-        else {
-            q.push(make(y-1, x, now+1)); 
+        else { //move
+            q.push(inq(y-1, x, now+1)); 
             go[now+1][y-1][x] = 5; 
             //printf("UP y: %d x: %d t: %d\n", y-1, x, now+1);
         }
@@ -162,7 +159,7 @@ int main(){
             break;
         }
         else {
-            q.push(make(y, x+1, now+1)); 
+            q.push(inq(y, x+1, now+1)); 
             go[now+1][y][x+1] = 5; 
             //printf("RI y: %d x: %d t: %d\n", y, x+1, now+1);
         }
@@ -177,7 +174,7 @@ int main(){
             break;
         }
         else {
-            q.push(make(y+1, x, now+1)); 
+            q.push(inq(y+1, x, now+1)); 
             go[now+1][y+1][x] = 5; 
             //printf("DN y: %d x: %d t: %d\n", y+1, x, now+1);
         }
@@ -192,17 +189,17 @@ int main(){
             break;
         }
         else {
-            q.push(make(y, x-1, now+1)); 
+            q.push(inq(y, x-1, now+1)); 
             go[now+1][y][x-1] = 5; 
             //printf("LE y: %d x: %d t: %d\n", y, x-1, now+1);
         }
 
         //no change
-        if(go[now+1][y][x] || go[now][y][x] == 1){}
+        if(go[now+1][y][x]){} // enemy will be there 
         else {
-            q.push(make(y, x, now+1)); 
+            q.push(inq(y, x, now+1)); 
             go[now+1][y][x] = 5; 
-            //printf("NO y: %d x: %d t: %d\n", y, x, now+1);
+            //printf("NO MOVE y: %d x: %d t: %d\n", y, x, now+1);
         }
 
         //printf("\n");
