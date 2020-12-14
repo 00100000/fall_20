@@ -1,6 +1,6 @@
 #include <cstdio>
 #include <queue>
-#define INF 900000000000000
+#define INF 9000000000
 #define LL long long int
 using namespace std;
 
@@ -44,66 +44,45 @@ int main(){
         scanf("%d%d%d", &u, &v, &w);
         add_edge(u, v, w);
     }
-    /*
-    for(int i = 0; i < n; i++){
-        node* cur = &adja[i];
-        printf("%d: ", i);
-        while(cur -> next){
-            cur = cur -> next;
-            printf("%d ", cur -> v);
-        }
-        printf("\n");
-    }
-    */
     
     // Dijkstra*3
     LL path[3][3] = {{INF, INF, INF}, {INF, INF, INF}, {INF, INF, INF}};
     for(int i = 0; i < 3; i++){
-        priority_queue<int, vector<int>, cmp> q;
         int s[10005] = {0};
         for(int j = 0; j < n; j++){
             d[j] = INF;
-            //q.push(j);
         }
         d[check[i]] = 0;
-        q.push(check[i]);
         s[check[i]] = 1;
-        //for(int j = 0; j < n; j++)printf("%d ", d[j]);
-        //printf("case1\n\n");
-        //printf("node: %d\n", check[i]);
-        while(!q.empty()){
-            int u = q.top();
+        
+        int done = 0;
+        while(done < n){
+            done ++;
+            int u = -1;
 
-            //printf("%d\n", u);
-            //for(int j = 0; j < n; j++)printf("%lld ", d[j]);
-            //printf("\n");
-            //for(int j = 0; j < n; j++)printf("%d ", s[j]);
-            //printf("\n\n");
-
-            q.pop();
+            for(int j = 0; j < n; j++){
+                if(s[j] == 1 && u < 0) u = j;
+                else if(s[j] == 1 && d[j] < d[u]) u = j;
+            }
+            s[u] = 2;
+            
+            s[u] = 2;
             node* cur = &adja[u];
             while(cur -> next){
                 cur = cur -> next;
-                //printf("%d %d\n", d[cur -> v], d[u] + cur -> w);
                 if(d[cur -> v] > d[u] + cur -> w){
                     d[cur -> v] = d[u] + cur -> w;
-                    //printf("%d ", cur->v);
-                    if(!s[cur->v]){
-                        q.push(cur->v);
+                    if(s[cur->v] == 0){
                         s[cur->v] = 1;
-                        //printf("push");
                     }
-                    //printf("\n");
                 } 
-                //printf("relax: %d %d\n", u, cur -> v);
             }
         }
-        //for(int j = 0; j < n; j++)printf("%d ", d[j]);
-        //printf("\n\n");
         path[i][0] = d[check[0]];
         path[i][1] = d[check[1]];
         path[i][2] = d[check[2]];
     }
+
     LL ans[2];
     ans[0] = path[0][1] + path[1][2] + path[2][0];
     ans[1] = path[1][0] + path[2][1] + path[0][2];
@@ -116,7 +95,7 @@ int main(){
         printf("%lld\n", ans[1]);
     }
     else if(path[1][0] >= INF || path[2][1] >= INF || path[0][2] >= INF){
-        printf("lld\n", ans[0]);
+        printf("%lld\n", ans[0]);
     }
     else printf("%lld\n", ans[0] < ans[1] ? ans[0] : ans[1]);
 }

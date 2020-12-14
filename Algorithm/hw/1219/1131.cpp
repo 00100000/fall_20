@@ -1,9 +1,19 @@
-// waaaaaaaaaa
+// tle version AC
+
 #include <cstdio>
 #include <queue>
-#define INF 900000000000000
+#define INF 9000000000
 #define LL long long int
 using namespace std;
+
+class heap{
+public:
+    int node[10005];
+    int n;
+    void build(int i);
+    void update();
+    int extract_min();
+};
 
 typedef struct node_{
     int v;
@@ -26,14 +36,6 @@ void add_edge(int u, int  v, int w){
     cur -> next = newnode;
 }
 
-struct cmp
-{
-    bool operator()(int &a, int &b) const
-    {
-        return d[a] > d[b];
-    }
-};
-
 int main(){
     int n, m;
     int check[3];
@@ -46,105 +48,69 @@ int main(){
         add_edge(u, v, w);
     }
     
-    
     // Dijkstra*3
-    LL path[3][3] = {0};
-    int yes[3][3][2] = {0};
+    LL path[3][3] = {{INF, INF, INF}, {INF, INF, INF}, {INF, INF, INF}};
     for(int i = 0; i < 3; i++){
-        priority_queue<int, vector<int>, cmp> q;
         int s[10005] = {0};
-        int pi[10005];
-
+        heap h;
         for(int j = 0; j < n; j++){
             d[j] = INF;
+            h.node[j] = j;
         }
+        h.build(check[i]);
         d[check[i]] = 0;
-        q.push(check[i]);
         s[check[i]] = 1;
-        pi[check[i]] = check[i];
         
-        while(!q.empty()){
-            int u = q.top();
+        int done = 0;
+        while(done < n){
+            done ++;
+            /*
+            int u = -1;
+            for(int j = 0; j < n; j++){
+                if(s[j] == 1 && u < 0) u = j;
+                else if(s[j] == 1 && d[j] < d[u]) u = j;
+            }
+            s[u] = 2;
+            */
 
-            q.pop();
             node* cur = &adja[u];
             while(cur -> next){
                 cur = cur -> next;
-                if((d[cur -> v] > d[u] + cur -> w)){
+                if(d[cur -> v] > d[u] + cur -> w){
                     d[cur -> v] = d[u] + cur -> w;
-                    pi[cur -> v] = u;
-                    if(!s[cur->v]){
-                        q.push(cur->v);
+                    if(s[cur->v] == 0){
                         s[cur->v] = 1;
                     }
                 } 
             }
         }
-        //
-        int j = (i + 1) % 3;
-        int k = (i + 2) % 3;
-        //
-        //printf("%d\n", check[i]);
-        if(d[check[j]] < INF){
-            path[i][j] = d[check[j]];
-            yes[i][j][0] = 1;
-            int cur = check[j];
-            while(cur != pi[cur]){
-                //printf("%d %d\n", cur, pi[cur]);
-                if(cur == check[k]){
-                    yes[i][j][1] = 1;
-                    break;
-                }
-                cur = pi[cur];
-            }
-        }
-        //printf("here\n");
-        //
-        if(d[check[k]] < INF){
-            path[i][k] = d[check[k]];
-            yes[i][k][0] = 1;
-            int cur = check[k];
-            while(cur != pi[cur]){
-                //printf("%d %d\n", cur, pi[cur]);
-                if(cur == check[j]){
-                    yes[i][k][1] = 1;
-                    break;
-                }
-                cur = pi[cur];
-            }
-        }
+        path[i][0] = d[check[0]];
+        path[i][1] = d[check[1]];
+        path[i][2] = d[check[2]];
     }
-    
-    LL ans = -1;
-    //ans = path[0][1] + path[1][2] + path[2][0];
-    if(yes[0][1][0] && yes[1][2][0] && yes[2][0][0]){
-        ans = path[0][1] + path[1][2] + path[2][0];
+
+    LL ans[2];
+    ans[0] = path[0][1] + path[1][2] + path[2][0];
+    ans[1] = path[1][0] + path[2][1] + path[0][2];
+
+    if((path[0][1] >= INF || path[1][2] >= INF || path[2][0] >= INF) 
+    && (path[1][0] >= INF || path[2][1] >= INF || path[0][2] >= INF)){
+        printf("-1\n");
     }
-    //ans = path[1][0] + path[2][1] + path[0][2];
-    if(yes[1][0][0] && yes[2][1][0] && yes[0][2][0]){
-        if(ans < 0 || ans > path[1][0] + path[2][1] + path[0][2])
-            ans = path[1][0] + path[2][1] + path[0][2];
+    else if(path[0][1] >= INF || path[1][2] >= INF || path[2][0] >= INF){
+        printf("%lld\n", ans[1]);
     }
-    if(ans >= 0){
-        if(yes[0][1][0] && yes[1][0][0] && yes[0][1][1]){
-            if(ans > path[0][1] + path[1][0]) ans = path[0][1] + path[1][0];
-        }
-        if(yes[1][2][0] && yes[2][1][0] && yes[1][2][1]){
-            if(ans > path[1][2] + path[2][1]) ans = path[1][2] + path[2][1];
-        }
-        if(yes[2][0][0] && yes[0][2][0] && yes[2][0][1]){
-            if(ans > path[2][0] + path[0][2]) ans = path[2][0] + path[0][2];
-        }
-        if(yes[1][0][0] && yes[0][1][0] && yes[1][0][1]){
-            if(ans > path[1][0] + path[0][1]) ans = path[1][0] + path[0][1];
-        }
-        if(yes[2][1][0] && yes[1][2][0] && yes[2][1][1]){
-            if(ans > path[2][1] + path[1][2]) ans = path[2][1] + path[1][2];
-        }
-        if(yes[0][2][0] && yes[2][0][0] && yes[0][2][1]){
-            if(ans > path[0][2] + path[2][0]) ans = path[0][2] + path[2][0];
-        }
+    else if(path[1][0] >= INF || path[2][1] >= INF || path[0][2] >= INF){
+        printf("%lld\n", ans[0]);
     }
-    
-    printf("%lld\n", ans);
+    else printf("%lld\n", ans[0] < ans[1] ? ans[0] : ans[1]);
+}
+
+void heap::build(int i){
+}
+
+void heap::update(){
+}
+
+int extract_min(){
 }
