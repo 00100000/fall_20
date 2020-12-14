@@ -1,3 +1,4 @@
+// waaaaaaaaaa
 #include <cstdio>
 #include <queue>
 #define INF 900000000000000
@@ -44,72 +45,106 @@ int main(){
         scanf("%d%d%d", &u, &v, &w);
         add_edge(u, v, w);
     }
-    /*
-    for(int i = 0; i < n; i++){
-        node* cur = &adja[i];
-        printf("%d: ", i);
-        while(cur -> next){
-            cur = cur -> next;
-            printf("%d ", cur -> v);
-        }
-        printf("\n");
-    }
-    */
+    
     
     // Dijkstra*3
-    LL path[3][3] = {{INF, INF, INF}, {INF, INF, INF}, {INF, INF, INF}};
+    LL path[3][3] = {0};
+    int yes[3][3][2] = {0};
     for(int i = 0; i < 3; i++){
         priority_queue<int, vector<int>, cmp> q;
         int s[10005] = {0};
+        int pi[10005];
+
         for(int j = 0; j < n; j++){
             d[j] = INF;
-            //q.push(j);
         }
         d[check[i]] = 0;
         q.push(check[i]);
         s[check[i]] = 1;
-        //for(int j = 0; j < n; j++)printf("%d ", d[j]);
-        //printf("case1\n\n");
-        //printf("node: %d\n", check[i]);
+        pi[check[i]] = check[i];
+        
         while(!q.empty()){
             int u = q.top();
-
-            //printf("%d\n", u);
-            //for(int j = 0; j < n; j++)printf("%lld ", d[j]);
-            //printf("\n");
-            //for(int j = 0; j < n; j++)printf("%d ", s[j]);
-            //printf("\n\n");
 
             q.pop();
             node* cur = &adja[u];
             while(cur -> next){
                 cur = cur -> next;
-                //printf("%d %d\n", d[cur -> v], d[u] + cur -> w);
-                if(d[cur -> v] > d[u] + cur -> w){
+                if((d[cur -> v] > d[u] + cur -> w)){
                     d[cur -> v] = d[u] + cur -> w;
-                    //printf("%d ", cur->v);
+                    pi[cur -> v] = u;
                     if(!s[cur->v]){
                         q.push(cur->v);
                         s[cur->v] = 1;
-                        //printf("push");
                     }
-                    //printf("\n");
                 } 
-                //printf("relax: %d %d\n", u, cur -> v);
             }
         }
-        //for(int j = 0; j < n; j++)printf("%d ", d[j]);
-        //printf("\n\n");
-        if(d[check[0]] >= INF || d[check[1]] >= INF || d[check[2]] >= INF){
-            printf("-1\n");
-            return 0;
+        //
+        int j = (i + 1) % 3;
+        int k = (i + 2) % 3;
+        //
+        //printf("%d\n", check[i]);
+        if(d[check[j]] < INF){
+            path[i][j] = d[check[j]];
+            yes[i][j][0] = 1;
+            int cur = check[j];
+            while(cur != pi[cur]){
+                //printf("%d %d\n", cur, pi[cur]);
+                if(cur == check[k]){
+                    yes[i][j][1] = 1;
+                    break;
+                }
+                cur = pi[cur];
+            }
         }
-        path[i][0] = d[check[0]];
-        path[i][1] = d[check[1]];
-        path[i][2] = d[check[2]];
+        //printf("here\n");
+        //
+        if(d[check[k]] < INF){
+            path[i][k] = d[check[k]];
+            yes[i][k][0] = 1;
+            int cur = check[k];
+            while(cur != pi[cur]){
+                //printf("%d %d\n", cur, pi[cur]);
+                if(cur == check[j]){
+                    yes[i][k][1] = 1;
+                    break;
+                }
+                cur = pi[cur];
+            }
+        }
     }
-    LL ans[2];
-    ans[0] = path[0][1] + path[1][2] + path[2][0];
-    ans[1] = path[1][0] + path[2][1] + path[0][2];
-    printf("%lld\n", ans[0] < ans[1] ? ans[0] : ans[1]);
+    
+    LL ans = -1;
+    //ans = path[0][1] + path[1][2] + path[2][0];
+    if(yes[0][1][0] && yes[1][2][0] && yes[2][0][0]){
+        ans = path[0][1] + path[1][2] + path[2][0];
+    }
+    //ans = path[1][0] + path[2][1] + path[0][2];
+    if(yes[1][0][0] && yes[2][1][0] && yes[0][2][0]){
+        if(ans < 0 || ans > path[1][0] + path[2][1] + path[0][2])
+            ans = path[1][0] + path[2][1] + path[0][2];
+    }
+    if(ans >= 0){
+        if(yes[0][1][0] && yes[1][0][0] && yes[0][1][1]){
+            if(ans > path[0][1] + path[1][0]) ans = path[0][1] + path[1][0];
+        }
+        if(yes[1][2][0] && yes[2][1][0] && yes[1][2][1]){
+            if(ans > path[1][2] + path[2][1]) ans = path[1][2] + path[2][1];
+        }
+        if(yes[2][0][0] && yes[0][2][0] && yes[2][0][1]){
+            if(ans > path[2][0] + path[0][2]) ans = path[2][0] + path[0][2];
+        }
+        if(yes[1][0][0] && yes[0][1][0] && yes[1][0][1]){
+            if(ans > path[1][0] + path[0][1]) ans = path[1][0] + path[0][1];
+        }
+        if(yes[2][1][0] && yes[1][2][0] && yes[2][1][1]){
+            if(ans > path[2][1] + path[1][2]) ans = path[2][1] + path[1][2];
+        }
+        if(yes[0][2][0] && yes[2][0][0] && yes[0][2][1]){
+            if(ans > path[0][2] + path[2][0]) ans = path[0][2] + path[2][0];
+        }
+    }
+    
+    printf("%lld\n", ans);
 }
