@@ -20,20 +20,25 @@ int main(){
         int u, v;
         scanf("%d%d", &u, &v);
         if(u > v) swap(u, v);
-        adja[u][v] ++;
+        if(u != v){
+            adja[u][v] ++;
+        }
     }
+    
     for(int i = 0; i < q; i++){
         int u, v;
         scanf("%d%d", &u, &v);
         if(u > v) swap(u, v);
-        if(u > 0 && adja[u][v]){
+        if(u >= 0 && adja[u][v] > 0){
             adja[u][v] --;
             op[i][2] = 1;
         }
         op[i][0] = u;
         op[i][1] = v;
     }
+
     bfs();
+
     stack<int> s;
     for(int i = q-1; i >= 0; i--){
         if(op[i][0] < 0) s.push( query(op[i][1]) );
@@ -48,7 +53,24 @@ int main(){
 void bfs(){
     for(int i = 0; i < n; i++){
         if(!visit[i]){
-            int cnt = 1;
+            int cnt = 0;
+            queue<int> q;
+            q.push(i);
+            pre[i][0] = i;
+            visit[i] = 1;
+            while(!q.empty()){
+                int cur = q.front();
+                cnt ++;
+                q.pop();
+                for(int j = 0; j < n; j++){
+                    if(!visit[j] && (adja[cur][j] || adja[j][cur])){
+                        q.push(j);
+                        pre[j][0] = i;
+                        visit[j] = 1;
+                    }
+                }
+            }
+            pre[i][1] = cnt;
         }
     }
 }
