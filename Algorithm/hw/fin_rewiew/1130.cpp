@@ -10,8 +10,23 @@ int enpos[1005][105][105];
 int enemy[10005][3];
 int n_enemy;
 
-int inq(int t, int y, int x);
-void deq(int in, int &t, int &y, int &x);
+int inq(int t, int y, int x){
+    int ans = 0;
+    ans |= t;
+    ans <<= 8;
+    ans |= y;
+    ans <<= 8;
+    ans |= x;
+    return ans;
+}
+
+void deq(int in, int &t, int &y, int &x){
+    t = in & 0xFFFF0000;
+    t >>= 16;
+    y = in & 0x0000FF00;
+    y >>= 8;
+    x = in & 0x000000FF;
+}
 
 int main(){
     // input
@@ -58,4 +73,35 @@ int main(){
             }
         }
     }
+
+    // role bfs
+    queue<int> q;
+    q.push(inq(0, sy, sx));
+    enpos[0][sy][sx] = 2;
+    int nwt, nwy, nwx;
+    int nxy, nxx;
+    int done = 0;
+    while(!q.empty()){
+        deq(q.front(), nwt, nwy, nwx);
+        if(nwt == t) break;
+        q.pop();
+        for(int i = 0; i < 5; i++){
+            nxy = nwy + go[i][0];
+            nxx = nwx + go[i][1];
+            if(nxy < 0 || nxx < 0 || nxy >= n || nxx >= m){}
+            else if(enpos[nwt + 1][nxy][nxx] || enpos[nwt][nxy][nxx] == 1){}
+            else if(map[nxy][nxx] == 0){}
+            else if(map[nxy][nxx] == 3){
+                printf("%d\n", nwt + 1);
+                done = 1;
+                break;
+            }
+            else{
+                enpos[nwt + 1][nxy][nxx] = 2;
+                q.push(inq(nwt + 1, nxy, nxx));
+            }
+        }
+        if(done) break;
+    }
+    if(!done) printf("-1\n");
 }

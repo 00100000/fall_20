@@ -4,6 +4,9 @@
 ### 回朔（？） | 我看這是通靈
 
 ## [1129 . Split Connected Components](https://oj.nctu.edu.tw/problems/1129/)
-### connected component | BFS | 反過來做
+### connected component | bfs | 反過來做
 
 ## [1130 . Shortest Manhattan Walk](https://oj.nctu.edu.tw/problems/1130/)
+### bfs | 移動迷宮
+
+## [1132 . Second Largest Strongly Connected Component](https://oj.nctu.edu.tw/problems/1132/)
