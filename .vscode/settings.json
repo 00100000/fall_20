@@ -9,6 +9,8 @@
         "functional": "cpp",
         "memory": "cpp",
         "queue": "cpp",
-        "cstdio": "cpp"
+        "cstdio": "cpp",
+        "deque": "cpp",
+        "string": "cpp"
     }
 }
