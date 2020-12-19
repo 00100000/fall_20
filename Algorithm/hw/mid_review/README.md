@@ -40,5 +40,14 @@
 ### 文式圖
 
 ## [1120. Longest Palindromic Subsequence](https://oj.nctu.edu.tw/problems/1120/)
-### dp | LCS | n^2
-- 記憶體不要平方！
+### DP | LCS
+- 記憶體不要平方！（兩三個 row）
+- 如果這兩個字一樣就左上角ㄉ +1 記下來，不一樣就不要加一
+
+## [1121. Shortest Interval Cover]()
+### Binary Search
+- 範圍要注意下
+
+## [1122. Knapsack with Volumes]()
+### DP | 背包問題
+-  volume, weight 二維陣列
