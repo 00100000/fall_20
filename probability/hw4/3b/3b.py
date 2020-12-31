@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Sample code of HW4, Problem 3
-"""
 
 import matplotlib.pyplot as plt
 import pickle
